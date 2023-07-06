@@ -1,0 +1,112 @@
+import pygetwindow
+import time
+import os
+import pyautogui
+import PIL
+from PIL import Image
+
+
+import sys
+sys.path.insert(1, r'C:\Users\16047\Desktop\Youtube_ChessPuzzleCreator\code_tiktok\tiktok-voice')
+
+from main import main
+
+#from youtubetomp3_fast import run 
+####
+
+### PRE REQ of using this code, we need a chess puzzle and clipped music
+
+
+################################## GET THE CHESS PUZZLE ########################
+
+
+
+def generate_tiktok_voice(): 
+        # Basic usuage is that i provide a string here which saves to a txt file and then it calls the Tiktok voice code from github
+        val = input("Enter the Tiktok Voice that you would like: ")
+        #open text file
+        text_file = open(r'C:\Users\16047\Desktop\Youtube_ChessPuzzleCreator\youtube_tiktok.txt', "w")
+ 
+        #write string to file
+        text_file.write(val)
+ 
+        #close file
+        text_file.close()
+        
+        main()
+
+    
+
+def chess_video():
+    filepath = r'C:\Users\d\Desktop\Youtube_ChessPuzzleCreator\chess_puzzles'
+  
+    voice_clip = r'C:/Users/d/Desktop/Youtube_ChessPuzzleCreator/voice_tiktok/5.mp3' # Mozart 
+    
+    likesub = r'C:\Users\16047\Desktop\Youtube_ChessPuzzleCreator\LikeSub.png'
+    video_name = 'chess_puzzle.mp4'
+  
+    # get screensize
+    x,y = pyautogui.size()
+    print(f"width={x}\theight={y}")
+    
+    # window zoom size is 75% and the chess window is open on the leftside 
+    x2,y2 = pyautogui.size()
+    x2,y2=int(str(x2)),int(str(y2))
+    # print(x2//2) # 1720
+    # print(y2//2) # 720
+    
+    # save screenshot
+    p = pyautogui.screenshot()
+    p.save(filename)
+    
+    # edit screenshot
+    im = PIL.Image.open(filename)
+    
+    # im_crop = im.crop((10, 150, 1600, 1220))
+    # im_crop = im.crop((100, 100, 1350, 1400)) # for chess.com with screen on left side and 75% zoom
+    # im_crop = im.crop((150, 100, 1200, 1300)) # for chess analysis puzzles
+    # Lichess Puzzle , Left Side and Zoom =150   
+    im_crop = im.crop((25, 155, 1105, 1245))
+  
+    im_crop = im_crop.resize((1080,1080))
+    # im_crop.paste(im2, (1260,930)) ## 2nd argument is position 
+    im_crop.save(filename, quality=100)
+    
+    
+    #################  Turn picture into video and embed music       #######
+    
+    ### 9:16 aspect ### 
+
+    import cv2
+    import numpy as np
+    import glob
+    import moviepy.editor as mp
+    from moviepy.editor import CompositeAudioClip
+    
+    # 16:9 aspect ratio is 1920x1080
+    
+    img = cv2.imread(filename)
+    height, width, layers = img.shape
+    size = (width,height) # dimensions need
+    out = cv2.VideoWriter(video_name,cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+     
+    for i in range(40):
+        out.write(img)  # 100 is about 6 seconds
+    out.release()
+    
+    audio = mp.AudioFileClip(music_clip)
+    audio = audio.volumex(0.3)
+    audio = audio.subclip(0,-0.05)
+    voice = mp.AudioFileClip(voice_clip)
+    voice = voice.subclip(0,-0.05)
+    
+    mixed = CompositeAudioClip([audio, voice])
+    
+    video1 = mp.VideoFileClip(video_name)
+    final = video1.set_audio(mixed)
+    final.write_videofile("chess_puzzle_withMusic.mp4")
+    
+
+    
+generate_tiktok_voice()
+chess_video() # change the music here 
